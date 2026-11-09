@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Written Statement</title>
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --ink: #1b2430;
+    --muted: #5a6677;
+    --line: #cfd6df;
+    --navy: #14325c;
+    --navy-ink: #ffffff;
+    --accent-bg: #e8eef7;
+    --warn-bg: #fff6e0;
+    --warn-line: #e0b84a;
+    --err: #b3261e;
+    --ok-bg: #e6f4ea;
+    --ok-line: #5aa469;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10151c;
+      --card: #19212b;
+      --ink: #e8edf3;
+      --muted: #9aa7b6;
+      --line: #36424f;
+      --navy: #6f9ee0;
+      --navy-ink: #0c1118;
+      --accent-bg: #1f2b3a;
+      --warn-bg: #2d2714;
+      --warn-line: #8a7230;
+      --err: #ff8a80;
+      --ok-bg: #16281c;
+      --ok-line: #3f7a4e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.45;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 16px; }
+  header { padding: 8px 0 4px; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .brand { font-weight: 700; letter-spacing: .04em; color: var(--navy); font-size: 14px; text-transform: uppercase; }
+  .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; background: var(--card); }
+  .lang button {
+    border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 15px;
+    padding: 8px 16px; min-height: 40px; cursor: pointer;
+  }
+  .lang button[aria-pressed="true"] { background: var(--navy); color: var(--navy-ink); font-weight: 600; }
+  h1 { font-size: 26px; line-height: 1.2; margin: 14px 0 6px; }
+  .sub { color: var(--muted); margin: 0 0 14px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px; margin: 0 0 14px;
+  }
+  .card h2 { font-size: 18px; margin: 0 0 4px; }
+  .card .hint { color: var(--muted); font-size: 15px; margin: 0 0 12px; }
+  .rules { background: var(--accent-bg); border-color: var(--line); }
+  .rules ul { margin: 6px 0 0; padding-left: 20px; }
+  .rules li { margin: 4px 0; }
+  label.lbl { display: block; font-weight: 600; margin: 14px 0 6px; }
+  label.lbl:first-of-type { margin-top: 0; }
+  .opt { font-weight: 400; color: var(--muted); font-size: 15px; }
+  input[type="text"], input[type="tel"], input[type="date"], input[type="datetime-local"], select, textarea {
+    width: 100%; font: inherit; font-size: 16px; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px; padding: 12px; min-height: 48px;
+  }
+  textarea { min-height: 120px; resize: vertical; }
+  textarea.big { min-height: 260px; }
+  input:focus, select:focus, textarea:focus, button:focus-visible {
+    outline: 3px solid var(--navy); outline-offset: 1px;
+  }
+  .check { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; }
+  .check input { width: 24px; height: 24px; flex: 0 0 24px; margin: 2px 0 0; accent-color: var(--navy); }
+  .check span { flex: 1; }
+  .row2 { display: grid; grid-template-columns: 1fr; gap: 0 12px; }
+  @media (min-width: 560px) { .row2 { grid-template-columns: 1fr 1fr; } }
+  .prompts { margin: 0 0 10px; padding-left: 20px; color: var(--muted); font-size: 15px; }
+  .prompts li { margin: 3px 0; }
+  .err { color: var(--err); font-size: 15px; margin: 6px 0 0; display: none; }
+  .invalid + .err, .invalid ~ .err { display: block; }
+  .invalid { border-color: var(--err) !important; }
+  .btn {
+    display: block; width: 100%; font: inherit; font-size: 18px; font-weight: 700;
+    background: var(--navy); color: var(--navy-ink); border: 0; border-radius: 10px;
+    padding: 16px; min-height: 56px; cursor: pointer;
+  }
+  .btn.second {
+    background: transparent; color: var(--navy); border: 2px solid var(--navy);
+    font-size: 16px; min-height: 48px; padding: 12px; margin-top: 10px;
+  }
+  .after { display: none; border-color: var(--ok-line); background: var(--ok-bg); }
+  .after.show { display: block; }
+  .after h2 { margin-bottom: 8px; }
+  .after ol { padding-left: 22px; margin: 8px 0; }
+  .after li { margin: 6px 0; }
+  .warn { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 10px; padding: 12px; margin: 10px 0; font-size: 15px; }
+  .small { color: var(--muted); font-size: 14px; }
+  .draftnote { text-align: center; margin: 4px 0 24px; }
+  .hidden { display: none !important; }
+  pre.preview {
+    white-space: pre-wrap; word-break: break-word; background: var(--bg); border: 1px solid var(--line);
+    border-radius: 8px; padding: 12px; font: 14px/1.4 ui-monospace, Consolas, monospace; max-height: 260px; overflow: auto;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="topbar">
+      <div class="brand">ICF Mercantile</div>
+      <div class="lang" role="group" aria-label="Language / Idioma">
+        <button type="button" id="btnEN" aria-pressed="true">English</button>
+        <button type="button" id="btnES" aria-pressed="false">Español</button>
+      </div>
+    </div>
+    <h1 data-i18n="title">Written Statement</h1>
+    <p class="sub" data-i18n="sub">For the company record. Anyone on the shift can fill this out. It takes about 10 minutes.</p>
+  </header>
+
+  <section class="card rules">
+    <h2 data-i18n="rulesH">Before you start</h2>
+    <ul>
+      <li data-i18n="rule1">Write only what you saw or heard yourself.</li>
+      <li data-i18n="rule2">Write it in your own words. Spanish or English, whichever is easier.</li>
+      <li data-i18n="rule3">If you did not see it, did not hear it, or do not remember, say so. "I don't know" is a good answer.</li>
+      <li data-i18n="rule4">Do not write what you think someone felt or meant. Write what they did and said.</li>
+      <li data-i18n="rule5">Write your statement before you talk it over with other people.</li>
+    </ul>
+  </section>
+
+  <form id="f" novalidate autocomplete="off">
+
+    <section class="card">
+      <h2 data-i18n="aboutH">1. About you</h2>
+
+      <label class="lbl" for="name" data-i18n="name">Your full name</label>
+      <input type="text" id="name" autocomplete="name" required>
+      <p class="err" data-i18n="errName">Please write your full name.</p>
+
+      <div class="row2">
+        <div>
+          <label class="lbl" for="role" data-i18n="role">Your job or position</label>
+          <input type="text" id="role" data-i18n-ph="rolePh" placeholder="Example: Operator">
+        </div>
+        <div>
+          <label class="lbl" for="shift" data-i18n="shift">Your shift</label>
+          <select id="shift">
+            <option value="" data-i18n="pick">Choose one</option>
+            <option value="Night" data-i18n="shNight">Night</option>
+            <option value="Day" data-i18n="shDay">Day</option>
+            <option value="Other" data-i18n="shOther">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <label class="lbl" for="phone"><span data-i18n="phone">Phone number</span> <span class="opt" data-i18n="optional">(optional)</span></label>
+      <input type="tel" id="phone" autocomplete="tel">
+
+      <label class="lbl" for="writtenAt" data-i18n="writtenAt">Date and time you are writing this</label>
+      <input type="datetime-local" id="writtenAt">
+    </section>
+
+    <section class="card">
+      <h2 data-i18n="whatH">2. What is your statement about?</h2>
+      <p class="hint" data-i18n="whatHint">Check every one that fits.</p>
+
+      <label class="check"><input type="checkbox" name="matter" value="Night of Wed 11/4/2026: Edwin and Jonathan on the floor"><span data-i18n="m1">Night of Wednesday 11/4/2026: Edwin and Jonathan on the floor</span></label>
+      <label class="check"><input type="checkbox" name="matter" value="Thu 11/5/2026: Edwin's meeting, the hallway, or the parking lot"><span data-i18n="m2">Thursday 11/5/2026: Edwin's meeting, the hallway, or the parking lot</span></label>
+      <label class="check"><input type="checkbox" name="matter" value="Earlier times I saw problems between Edwin and Jonathan"><span data-i18n="m3">Earlier times I saw problems between Edwin and Jonathan</span></label>
+      <label class="check"><input type="checkbox" name="matter" value="Something else"><span data-i18n="m4">Something else (explain in the box below)</span></label>
+      <p class="err" data-i18n="errMatter">Please check at least one.</p>
+
+      <label class="lbl" for="eventDate" data-i18n="eventDate">Date it happened</label>
+      <input type="date" id="eventDate">
+      <p class="small" data-i18n="eventDateHint">If you are describing more than one day, leave this empty and put the date at the start of each part of your statement.</p>
+
+      <div class="row2">
+        <div>
+          <label class="lbl" for="eventTime"><span data-i18n="eventTime">About what time?</span> <span class="opt" data-i18n="optional">(optional)</span></label>
+          <input type="text" id="eventTime" data-i18n-ph="timePh" placeholder="Example: 9:30 PM">
+        </div>
+        <div>
+          <label class="lbl" for="place"><span data-i18n="place">Where were you?</span> <span class="opt" data-i18n="optional">(optional)</span></label>
+          <input type="text" id="place" data-i18n-ph="placePh" placeholder="Example: D&amp;S room, hallway">
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 data-i18n="howH">3. How do you know this?</h2>
+      <p class="hint" data-i18n="howHint">Check every one that fits.</p>
+
+      <label class="check"><input type="checkbox" name="how" value="I saw it myself"><span data-i18n="h1">I saw it myself</span></label>
+      <label class="check"><input type="checkbox" name="how" value="I heard it myself"><span data-i18n="h2">I heard it myself</span></label>
+      <label class="check"><input type="checkbox" name="how" value="I was part of the conversation or the event"><span data-i18n="h3">I was part of the conversation or the event</span></label>
+      <label class="check"><input type="checkbox" name="how" value="Someone told me"><span data-i18n="h4">Someone told me (say who below)</span></label>
+      <label class="check"><input type="checkbox" name="how" value="I was not there"><span data-i18n="h5">I was not there</span></label>
+      <p class="err" data-i18n="errHow">Please check at least one.</p>
+
+      <label class="lbl" for="toldBy"><span data-i18n="toldBy">If someone told you, who and when?</span> <span class="opt" data-i18n="optional">(optional)</span></label>
+      <input type="text" id="toldBy">
+
+      <label class="lbl" for="present"><span data-i18n="present">Who else was there?</span> <span class="opt" data-i18n="optional">(optional)</span></label>
+      <textarea id="present" data-i18n-ph="presentPh" placeholder="Names of people who were there or who could have seen or heard it."></textarea>
+    </section>
+
+    <section class="card">
+      <h2 data-i18n="stH">4. Your statement</h2>
+      <p class="hint" data-i18n="stHint">Tell it in order, from the beginning. Include:</p>
+      <ul class="prompts">
+        <li data-i18n="p1">What was happening just before.</li>
+        <li data-i18n="p2">What each person did and said. Who was standing where.</li>
+        <li data-i18n="p3">How loud, and who could hear it.</li>
+        <li data-i18n="p4">What happened right after.</li>
+      </ul>
+      <label class="lbl" for="statement" data-i18n="stLbl">What happened</label>
+      <textarea id="statement" class="big" required></textarea>
+      <p class="err" data-i18n="errStatement">Please write your statement.</p>
+
+      <label class="lbl" for="words"><span data-i18n="words">Exact words you remember</span> <span class="opt" data-i18n="optional">(optional)</span></label>
+      <p class="small" style="margin:0 0 6px" data-i18n="wordsHint">Write them in the language they were said, in quotes, and say who said them.</p>
+      <textarea id="words"></textarea>
+
+      <label class="lbl" for="unsure"><span data-i18n="unsure">What you are not sure about, or did not see</span> <span class="opt" data-i18n="optional">(optional)</span></label>
+      <textarea id="unsure"></textarea>
+
+      <label class="lbl" for="media"><span data-i18n="media">Videos, photos, texts or messages about this</span> <span class="opt" data-i18n="optional">(optional)</span></label>
+      <p class="small" style="margin:0 0 6px" data-i18n="mediaHint">Say what you have and who has it. Do not attach anything here. Matt will ask for it.</p>
+      <textarea id="media"></textarea>
+    </section>
+
+    <section class="card">
+      <h2 data-i18n="signH">5. Sign</h2>
+      <label class="check"><input type="checkbox" id="certify"><span data-i18n="certify">This statement is in my own words. It is true and complete to the best of my knowledge.</span></label>
+      <p class="err" data-i18n="errCertify">Please check the box to sign.</p>
+
+      <label class="lbl" for="sig" data-i18n="sig">Type your full name as your signature</label>
+      <input type="text" id="sig" autocomplete="off">
+      <p class="err" data-i18n="errSig">Please type your full name.</p>
+    </section>
+
+    <button type="submit" class="btn" id="send" data-i18n="send">Email my statement to Matt</button>
+    <p class="small draftnote" data-i18n="draftNote">Your answers are saved on this phone while you write, so you can leave and come back.</p>
+  </form>
+
+  <section class="card after" id="after" aria-live="polite">
+    <h2 data-i18n="afterH">One more step: tap Send in your email</h2>
+    <ol>
+      <li data-i18n="a1">Your email app should have opened with your statement in it.</li>
+      <li data-i18n="a2"><strong>Tap Send in the email app.</strong> Your statement has not gone to Matt until you do.</li>
+      <li data-i18n="a3">Do not change the To line.</li>
+    </ol>
+    <div class="warn" data-i18n="a4">If your email app did not open, or the text looks cut off, tap "Copy statement". Then open your email, write a new message to the address below, paste, and send.</div>
+    <p><strong id="toShow"></strong></p>
+    <button type="button" class="btn second" id="copyBtn" data-i18n="copy">Copy statement</button>
+    <button type="button" class="btn second" id="againBtn" data-i18n="again">Open the email again</button>
+    <p class="small" id="copyMsg" role="status"></p>
+    <details>
+      <summary class="small" data-i18n="seeIt">See what will be sent</summary>
+      <pre class="preview" id="preview"></pre>
+    </details>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var TO = 'mbaynes@icfmercantile.com';
+  var DRAFT_KEY = 'icf_statement_draft_v1';
+  var LANG_KEY = 'icf_statement_lang';
+
+  var T = {
+    en: {
+      title: 'Written Statement',
+      sub: 'For the company record. Anyone on the shift can fill this out. It takes about 10 minutes.',
+      rulesH: 'Before you start',
+      rule1: 'Write only what you saw or heard yourself.',
+      rule2: 'Write it in your own words. Spanish or English, whichever is easier.',
+      rule3: 'If you did not see it, did not hear it, or do not remember, say so. "I don\'t know" is a good answer.',
+      rule4: 'Do not write what you think someone felt or meant. Write what they did and said.',
+      rule5: 'Write your statement before you talk it over with other people.',
+      aboutH: '1. About you',
+      name: 'Your full name', role: 'Your job or position', rolePh: 'Example: Operator',
+      shift: 'Your shift', pick: 'Choose one', shNight: 'Night', shDay: 'Day', shOther: 'Other',
+      phone: 'Phone number', optional: '(optional)',
+      writtenAt: 'Date and time you are writing this',
+      whatH: '2. What is your statement about?', whatHint: 'Check every one that fits.',
+      m1: 'Night of Wednesday 11/4/2026: Edwin and Jonathan on the floor',
+      m2: 'Thursday 11/5/2026: Edwin\'s meeting, the hallway, or the parking lot',
+      m3: 'Earlier times I saw problems between Edwin and Jonathan',
+      m4: 'Something else (explain in the box below)',
+      eventDate: 'Date it happened',
+      eventDateHint: 'If you are describing more than one day, leave this empty and put the date at the start of each part of your statement.',
+      eventTime: 'About what time?', timePh: 'Example: 9:30 PM',
+      place: 'Where were you?', placePh: 'Example: D&S room, hallway',
+      howH: '3. How do you know this?', howHint: 'Check every one that fits.',
+      h1: 'I saw it myself', h2: 'I heard it myself',
+      h3: 'I was part of the conversation or the event',
+      h4: 'Someone told me (say who below)', h5: 'I was not there',
+      toldBy: 'If someone told you, who and when?',
+      present: 'Who else was there?',
+      presentPh: 'Names of people who were there or who could have seen or heard it.',
+      stH: '4. Your statement', stHint: 'Tell it in order, from the beginning. Include:',
+      p1: 'What was happening just before.',
+      p2: 'What each person did and said. Who was standing where.',
+      p3: 'How loud, and who could hear it.',
+      p4: 'What happened right after.',
+      stLbl: 'What happened',
+      words: 'Exact words you remember',
+      wordsHint: 'Write them in the language they were said, in quotes, and say who said them.',
+      unsure: 'What you are not sure about, or did not see',
+      media: 'Videos, photos, texts or messages about this',
+      mediaHint: 'Say what you have and who has it. Do not attach anything here. Matt will ask for it.',
+      signH: '5. Sign',
+      certify: 'This statement is in my own words. It is true and complete to the best of my knowledge.',
+      sig: 'Type your full name as your signature',
+      send: 'Email my statement to Matt',
+      draftNote: 'Your answers are saved on this phone while you write, so you can leave and come back.',
+      errName: 'Please write your full name.',
+      errMatter: 'Please check at least one.',
+      errHow: 'Please check at least one.',
+      errStatement: 'Please write your statement.',
+      errCertify: 'Please check the box to sign.',
+      errSig: 'Please type your full name.',
+      afterH: 'One more step: tap Send in your email',
+      a1: 'Your email app should have opened with your statement in it.',
+      a2: '<strong>Tap Send in the email app.</strong> Your statement has not gone to Matt until you do.',
+      a3: 'Do not change the To line.',
+      a4: 'If your email app did not open, or the text looks cut off, tap "Copy statement". Then open your email, write a new message to the address below, paste, and send.',
+      copy: 'Copy statement', again: 'Open the email again',
+      seeIt: 'See what will be sent',
+      copied: 'Copied. Now paste it into a new email.',
+      copyFail: 'Could not copy. Press and hold the text below, choose Select all, then Copy.',
+      fixErrors: 'Please fix the items marked in red.'
+    },
+    es: {
+      title: 'Declaración escrita',
+      sub: 'Para el registro de la empresa. Cualquier persona del turno puede llenarla. Toma unos 10 minutos.',
+      rulesH: 'Antes de empezar',
+      rule1: 'Escriba solo lo que usted vio o escuchó personalmente.',
+      rule2: 'Escríbalo con sus propias palabras. En español o en inglés, como le sea más fácil.',
+      rule3: 'Si no lo vio, no lo escuchó o no lo recuerda, dígalo. "No sé" es una buena respuesta.',
+      rule4: 'No escriba lo que cree que alguien sintió o quiso decir. Escriba lo que hizo y lo que dijo.',
+      rule5: 'Escriba su declaración antes de hablar del tema con otras personas.',
+      aboutH: '1. Sobre usted',
+      name: 'Su nombre completo', role: 'Su puesto', rolePh: 'Ejemplo: Operador(a)',
+      shift: 'Su turno', pick: 'Elija uno', shNight: 'Noche', shDay: 'Día', shOther: 'Otro',
+      phone: 'Número de teléfono', optional: '(opcional)',
+      writtenAt: 'Fecha y hora en que escribe esto',
+      whatH: '2. ¿De qué trata su declaración?', whatHint: 'Marque todas las que apliquen.',
+      m1: 'Noche del miércoles 11/4/2026: Edwin y Jonathan en el piso',
+      m2: 'Jueves 11/5/2026: la reunión con Edwin, el pasillo o el estacionamiento',
+      m3: 'Otras veces que vi problemas entre Edwin y Jonathan',
+      m4: 'Otra cosa (explique en el cuadro de abajo)',
+      eventDate: 'Fecha en que ocurrió',
+      eventDateHint: 'Si describe más de un día, deje esto vacío y ponga la fecha al principio de cada parte de su declaración.',
+      eventTime: '¿Más o menos a qué hora?', timePh: 'Ejemplo: 9:30 PM',
+      place: '¿Dónde estaba usted?', placePh: 'Ejemplo: cuarto de D&S, pasillo',
+      howH: '3. ¿Cómo lo sabe?', howHint: 'Marque todas las que apliquen.',
+      h1: 'Lo vi yo mismo(a)', h2: 'Lo escuché yo mismo(a)',
+      h3: 'Fui parte de la conversación o del suceso',
+      h4: 'Alguien me lo contó (diga quién abajo)', h5: 'No estaba presente',
+      toldBy: 'Si alguien se lo contó, ¿quién y cuándo?',
+      present: '¿Quién más estaba presente?',
+      presentPh: 'Nombres de las personas que estaban o que pudieron haberlo visto o escuchado.',
+      stH: '4. Su declaración', stHint: 'Cuéntelo en orden, desde el principio. Incluya:',
+      p1: 'Lo que pasaba justo antes.',
+      p2: 'Lo que hizo y dijo cada persona. Quién estaba parado dónde.',
+      p3: 'Qué tan fuerte fue, y quién lo pudo escuchar.',
+      p4: 'Lo que pasó justo después.',
+      stLbl: 'Lo que pasó',
+      words: 'Palabras exactas que recuerda',
+      wordsHint: 'Escríbalas en el idioma en que se dijeron, entre comillas, y diga quién las dijo.',
+      unsure: 'Lo que no sabe con certeza, o lo que no vio',
+      media: 'Videos, fotos, mensajes de texto o mensajes sobre esto',
+      mediaHint: 'Diga qué tiene y quién lo tiene. No adjunte nada aquí. Matt se lo pedirá.',
+      signH: '5. Firma',
+      certify: 'Esta declaración está en mis propias palabras. Es verdadera y completa según mi leal saber y entender.',
+      sig: 'Escriba su nombre completo como firma',
+      send: 'Enviar mi declaración a Matt por correo',
+      draftNote: 'Sus respuestas se guardan en este teléfono mientras escribe, así que puede salir y volver.',
+      errName: 'Por favor escriba su nombre completo.',
+      errMatter: 'Por favor marque al menos una.',
+      errHow: 'Por favor marque al menos una.',
+      errStatement: 'Por favor escriba su declaración.',
+      errCertify: 'Por favor marque la casilla para firmar.',
+      errSig: 'Por favor escriba su nombre completo.',
+      afterH: 'Un paso más: toque Enviar en su correo',
+      a1: 'Su aplicación de correo debió abrirse con su declaración adentro.',
+      a2: '<strong>Toque Enviar en la aplicación de correo.</strong> Su declaración no llega a Matt hasta que lo haga.',
+      a3: 'No cambie la dirección en "Para".',
+      a4: 'Si su aplicación de correo no se abrió, o el texto se ve cortado, toque "Copiar declaración". Luego abra su correo, escriba un mensaje nuevo a la dirección de abajo, pegue y envíe.',
+      copy: 'Copiar declaración', again: 'Abrir el correo otra vez',
+      seeIt: 'Ver lo que se enviará',
+      copied: 'Copiado. Ahora péguelo en un correo nuevo.',
+      copyFail: 'No se pudo copiar. Mantenga presionado el texto de abajo, elija Seleccionar todo y luego Copiar.',
+      fixErrors: 'Por favor corrija lo marcado en rojo.'
+    }
+  };
+
+  var lang = 'en';
+  var $ = function (id) { return document.getElementById(id); };
+
+  function store(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  function applyLang(l) {
+    lang = l;
+    document.documentElement.lang = l;
+    var d = T[l];
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n');
+      if (d[k] !== undefined) {
+        if (/<strong>/.test(d[k])) { el.innerHTML = d[k]; } else { el.textContent = d[k]; }
+      }
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function (el) {
+      var k = el.getAttribute('data-i18n-ph');
+      if (d[k] !== undefined) el.placeholder = d[k];
+    });
+    $('btnEN').setAttribute('aria-pressed', l === 'en');
+    $('btnES').setAttribute('aria-pressed', l === 'es');
+    document.title = d.title;
+    store(LANG_KEY, l);
+  }
+
+  // ---- date helpers
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function nowLocal() {
+    var d = new Date();
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+  function prettyWritten(v) {
+    if (!v) return '';
+    var p = v.split('T');
+    var dt = p[0].split('-');
+    var tm = (p[1] || '').split(':');
+    var h = parseInt(tm[0], 10), m = tm[1] || '00';
+    var ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12; if (h === 0) h = 12;
+    return parseInt(dt[1], 10) + '/' + parseInt(dt[2], 10) + '/' + dt[0] + ' ' + h + ':' + m + ' ' + ap;
+  }
+  function prettyDate(v) {
+    if (!v) return '';
+    var dt = v.split('-');
+    return parseInt(dt[1], 10) + '/' + parseInt(dt[2], 10) + '/' + dt[0];
+  }
+
+  // ---- read the form
+  function checked(name) {
+    return Array.prototype.map.call(document.querySelectorAll('input[name="' + name + '"]:checked'), function (c) { return c.value; });
+  }
+  function val(id) { return $(id).value.replace(/\s+$/g, '').replace(/^\s+/g, ''); }
+
+  function buildText() {
+    var L = [];
+    var line = function (label, v) { L.push(label + ': ' + (v ? v : '(blank)')); };
+    L.push('WRITTEN STATEMENT');
+    L.push('ICF Mercantile, Berkeley Heights');
+    L.push('');
+    L.push('FROM');
+    line('Name', val('name'));
+    line('Position', val('role'));
+    line('Shift', $('shift').value);
+    line('Phone', val('phone'));
+    line('Written on', prettyWritten($('writtenAt').value));
+    L.push('');
+    L.push('ABOUT');
+    var mt = checked('matter');
+    if (mt.length) { mt.forEach(function (m) { L.push('- ' + m); }); } else { L.push('(none checked)'); }
+    line('Date it happened', prettyDate($('eventDate').value));
+    line('About what time', val('eventTime'));
+    line('Where I was', val('place'));
+    L.push('');
+    L.push('HOW I KNOW');
+    var hw = checked('how');
+    if (hw.length) { hw.forEach(function (m) { L.push('- ' + m); }); } else { L.push('(none checked)'); }
+    line('Told by (if someone told me)', val('toldBy'));
+    line('Others present', val('present'));
+    L.push('');
+    L.push('STATEMENT');
+    L.push(val('statement') || '(blank)');
+    L.push('');
+    L.push('EXACT WORDS I REMEMBER');
+    L.push(val('words') || '(blank)');
+    L.push('');
+    L.push('WHAT I AM NOT SURE ABOUT OR DID NOT SEE');
+    L.push(val('unsure') || '(blank)');
+    L.push('');
+    L.push('VIDEOS, PHOTOS, TEXTS OR MESSAGES');
+    L.push(val('media') || '(blank)');
+    L.push('');
+    L.push('SIGNATURE');
+    L.push('I certify this statement is in my own words and is true and complete to the best of my knowledge: ' + ($('certify').checked ? 'YES' : 'NO'));
+    L.push('Signed (typed): ' + (val('sig') || '(blank)'));
+    L.push('Signed on: ' + prettyWritten($('writtenAt').value));
+    L.push('Form language: ' + (lang === 'es' ? 'Spanish' : 'English'));
+    return L.join('\r\n');
+  }
+
+  function subjectLine() {
+    return 'Written statement - ' + (val('name') || 'no name') + ' - ' + (prettyDate($('eventDate').value) || prettyWritten($('writtenAt').value).split(' ')[0]);
+  }
+
+  function mailtoHref() {
+    return 'mailto:' + TO + '?subject=' + encodeURIComponent(subjectLine()) + '&body=' + encodeURIComponent(buildText());
+  }
+
+  // ---- validation
+  function setBad(el, bad) {
+    if (el.classList) el.classList.toggle('invalid', bad);
+  }
+  function groupBad(first, bad) {
+    // show the error paragraph that follows the group
+    var p = first;
+    while (p && !(p.classList && p.classList.contains('err'))) p = p.nextElementSibling;
+    if (p) p.style.display = bad ? 'block' : 'none';
+  }
+  function fieldBad(id, bad) {
+    var el = $(id);
+    setBad(el, bad);
+    var p = el.nextElementSibling;
+    if (p && p.classList.contains('err')) p.style.display = bad ? 'block' : 'none';
+  }
+  function checkboxGroupBad(name, bad) {
+    var boxes = document.querySelectorAll('input[name="' + name + '"]');
+    var last = boxes[boxes.length - 1].closest('label');
+    groupBad(last.nextElementSibling, bad);
+  }
+
+  function validate() {
+    var bad = [];
+    var nm = val('name') === '';
+    fieldBad('name', nm); if (nm) bad.push($('name'));
+
+    var mBad = checked('matter').length === 0;
+    checkboxGroupBad('matter', mBad); if (mBad) bad.push(document.querySelector('input[name="matter"]'));
+
+    var hBad = checked('how').length === 0;
+    checkboxGroupBad('how', hBad); if (hBad) bad.push(document.querySelector('input[name="how"]'));
+
+    var st = val('statement') === '';
+    fieldBad('statement', st); if (st) bad.push($('statement'));
+
+    var cBad = !$('certify').checked;
+    var cLabel = $('certify').closest('label');
+    groupBad(cLabel.nextElementSibling, cBad); if (cBad) bad.push($('certify'));
+
+    var sBad = val('sig') === '';
+    fieldBad('sig', sBad); if (sBad) bad.push($('sig'));
+
+    return bad;
+  }
+
+  // ---- draft save
+  var FIELDS = ['name', 'role', 'shift', 'phone', 'writtenAt', 'eventDate', 'eventTime', 'place', 'toldBy', 'present', 'statement', 'words', 'unsure', 'media'];
+  function saveDraft() {
+    var o = {};
+    FIELDS.forEach(function (id) { o[id] = $(id).value; });
+    o.matter = checked('matter');
+    o.how = checked('how');
+    store(DRAFT_KEY, JSON.stringify(o));
+  }
+  function restoreDraft() {
+    var raw = load(DRAFT_KEY);
+    if (!raw) return;
+    try {
+      var o = JSON.parse(raw);
+      FIELDS.forEach(function (id) { if (typeof o[id] === 'string') $(id).value = o[id]; });
+      ['matter', 'how'].forEach(function (g) {
+        document.querySelectorAll('input[name="' + g + '"]').forEach(function (c) {
+          c.checked = (o[g] || []).indexOf(c.value) !== -1;
+        });
+      });
+    } catch (e) {}
+  }
+
+  // ---- events
+  $('btnEN').addEventListener('click', function () { applyLang('en'); });
+  $('btnES').addEventListener('click', function () { applyLang('es'); });
+
+  $('f').addEventListener('input', saveDraft);
+  $('f').addEventListener('change', saveDraft);
+
+  function openMail() { window.location.href = mailtoHref(); }
+
+  $('f').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var bad = validate();
+    if (bad.length) {
+      bad[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      try { bad[0].focus({ preventScroll: true }); } catch (x) {}
+      return;
+    }
+    var text = buildText();
+    $('preview').textContent = text.replace(/\r\n/g, '\n');
+    $('toShow').textContent = TO;
+    $('after').classList.add('show');
+    $('copyMsg').textContent = '';
+    $('after').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    openMail();
+  });
+
+  $('againBtn').addEventListener('click', openMail);
+
+  $('copyBtn').addEventListener('click', function () {
+    var text = 'To: ' + TO + '\nSubject: ' + subjectLine() + '\n\n' + buildText().replace(/\r\n/g, '\n');
+    var done = function () { $('copyMsg').textContent = T[lang].copied; };
+    var fail = function () {
+      $('copyMsg').textContent = T[lang].copyFail;
+      $('after').querySelector('details').open = true;
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fail);
+    } else {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (ok) done(); else fail();
+      } catch (x) { fail(); }
+    }
+  });
+
+  // ---- start
+  restoreDraft();
+  if (!$('writtenAt').value) $('writtenAt').value = nowLocal();
+  var savedLang = load(LANG_KEY);
+  if (!savedLang) {
+    savedLang = (navigator.language || '').toLowerCase().indexOf('es') === 0 ? 'es' : 'en';
+  }
+  applyLang(savedLang === 'es' ? 'es' : 'en');
+})();
+</script>
+</body>
+</html>
