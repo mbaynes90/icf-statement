@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="640" viewBox="0 0 1920 320" role="img" aria-labelledby="title desc">
+<title id="title">ICF University</title>
+<desc id="desc">Transparent high-resolution dimensional treatment based on the ICF Mercantile blue and gray brand mark.</desc>
+
+<defs>
+ <linearGradient id="brandBlue" x1="0" y1="0" x2="0.35" y2="1">
+  <stop offset="0" stop-color="#0A72B4"/><stop offset=".22" stop-color="#0563A3"/>
+  <stop offset=".58" stop-color="#005A9F"/><stop offset=".82" stop-color="#0A6AA9"/>
+  <stop offset="1" stop-color="#004E8D"/>
+ </linearGradient>
+ <linearGradient id="brandGray" x1="0" y1="0" x2=".3" y2="1">
+  <stop offset="0" stop-color="#82949C"/><stop offset=".38" stop-color="#667B85"/>
+  <stop offset=".7" stop-color="#5A707A"/><stop offset="1" stop-color="#738690"/>
+ </linearGradient>
+ <linearGradient id="wordBlue" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#0B6CAB"/><stop offset=".18" stop-color="#0B68AB"/>
+  <stop offset=".38" stop-color="#075997"/><stop offset=".52" stop-color="#0A70B2"/>
+  <stop offset=".74" stop-color="#075997"/><stop offset="1" stop-color="#0A68A8"/>
+ </linearGradient>
+ <linearGradient id="tagGray" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#82939B"/><stop offset=".42" stop-color="#657B85"/>
+  <stop offset=".6" stop-color="#748993"/><stop offset="1" stop-color="#586F79"/>
+ </linearGradient>
+ <filter id="softDepth" x="-.08" y="-.3" width="1.2" height="1.7">
+  <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="b"/>
+  <feOffset in="b" dx="3" dy="5" result="o"/>
+  <feComponentTransfer in="o" result="s"><feFuncA type="linear" slope=".32"/></feComponentTransfer>
+  <feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge>
+ </filter>
+ <clipPath id="disc"><circle cx="162" cy="160" r="143"/></clipPath>
+ <mask id="negativeSpace">
+  <circle cx="162" cy="160" r="143" fill="white"/>
+  <g stroke="black" stroke-linecap="round" fill="none">
+   <path d="M162 160 L57 36" stroke-width="8"/>
+   <path d="M162 160 L27 80" stroke-width="7"/>
+   <path d="M162 160 L20 128" stroke-width="7"/>
+   <path d="M162 160 L20 192" stroke-width="7"/>
+   <path d="M162 160 L27 240" stroke-width="7"/>
+   <path d="M162 160 L57 284" stroke-width="8"/>
+   <path d="M162 160 L304 160" stroke-width="10"/>
+  </g>
+  <circle cx="162" cy="160" r="9" fill="black"/>
+ </mask>
+</defs>
+<g filter="url(#softDepth)">
+ <!-- The official mark uses a blue fan against a gray circular field. -->
+ <circle cx="162" cy="160" r="143" fill="url(#brandGray)" mask="url(#negativeSpace)"/>
+ <path d="M162 160 L91 36 A143 143 0 0 0 91 284 Z" fill="url(#brandBlue)" clip-path="url(#disc)" mask="url(#negativeSpace)"/>
+ <circle cx="162" cy="160" r="147" fill="none" stroke="#526A76" stroke-width="5"/>
+ <circle cx="162" cy="160" r="142" fill="none" stroke="#A8B5BB" stroke-opacity=".78" stroke-width="2"/>
+</g>
+
+<style>
+ .icf {font-family:'Nimbus Sans','Arial',sans-serif;font-size:125px;font-weight:800;fill:url(#wordBlue);stroke:#064B7A;stroke-width:1.6px;paint-order:stroke fill;filter:url(#softDepth)}
+ .name {font-family:'Nimbus Sans','Arial',sans-serif;font-size:113px;font-weight:500;letter-spacing:.5px;fill:url(#wordBlue);stroke:#064B7A;stroke-width:1.5px;paint-order:stroke fill;filter:url(#softDepth)}
+ .tag {font-family:'Nimbus Sans Narrow','Arial Narrow','Arial',sans-serif;font-size:62px;font-weight:600;letter-spacing:0px;fill:url(#tagGray);stroke:#465E68;stroke-width:.9px;paint-order:stroke fill;filter:url(#softDepth)}
+</style>
+<g>
+ <text x="340" y="183" class="icf">ICF</text>
+ <text x="590" y="183" textLength="1200" lengthAdjust="spacingAndGlyphs" class="name">UNIVERSITY</text></g>
+</svg>
