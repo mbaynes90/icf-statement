@@ -87,6 +87,13 @@
       factChapters: 'All {n} video chapters completed', factPassed: 'Test passed at {p}% on multiple choice',
       factWINA: 'No work instruction written only for this course; see Where this is covered',
       section: 'section', gapLead: 'Not yet in a document:',
+      codeTitle: 'Your time clock badge number',
+      codeIntro: 'Type your time clock badge number, the same number you punch in with. It connects this training to your ICF University record.',
+      codeLabel: 'Badge number', codeUse: 'Use this number',
+      codeWrong: 'That is not a badge number. It is three or four digits. Check your number and type it again.',
+      codeOk: 'Badge number {c} entered.', codeChange: 'Change number', codeNeeded: 'Enter your badge number first.',
+      nx_code: 'Enter your badge number', codeDone: 'Badge number entered', codeNotDone: 'Badge number not entered yet',
+      goCode: 'Enter the number', f_code: 'Badge number', codeEnding: '{c}',
       completionRecord: 'Completion record', completionCode: 'Completion code',
       f_course: 'Course', f_version: 'Version', f_lang: 'Language', f_name: 'Name', f_date: 'Date',
       f_score: 'Score', f_result: 'Result', f_mgr: 'Must-get-right questions', f_attempts: 'Attempts', f_record: 'Record ID',
@@ -165,6 +172,13 @@
       factChapters: 'Los {n} capítulos del video completados', factPassed: 'Examen aprobado con {p}% en opción múltiple',
       factWINA: 'No hay una instrucción de trabajo escrita solo para este curso; vea Dónde está cubierto',
       section: 'sección', gapLead: 'Todavía no está en un documento:',
+      codeTitle: 'Su número de gafete del reloj',
+      codeIntro: 'Escriba su número de gafete del reloj, el mismo con el que marca su entrada. Conecta esta capacitación con su registro en ICF University.',
+      codeLabel: 'Número de gafete', codeUse: 'Usar este número',
+      codeWrong: 'Eso no es un número de gafete. Son tres o cuatro dígitos. Revise su número y escríbalo otra vez.',
+      codeOk: 'Número de gafete {c} registrado.', codeChange: 'Cambiar el número', codeNeeded: 'Primero escriba su número de gafete.',
+      nx_code: 'Escriba su número de gafete', codeDone: 'Número de gafete registrado', codeNotDone: 'Número de gafete sin escribir todavía',
+      goCode: 'Escribir el número', f_code: 'Número de gafete', codeEnding: '{c}',
       completionRecord: 'Registro de finalización', completionCode: 'Código de finalización',
       f_course: 'Curso', f_version: 'Versión', f_lang: 'Idioma', f_name: 'Nombre', f_date: 'Fecha',
       f_score: 'Calificación', f_result: 'Resultado', f_mgr: 'Preguntas que debe acertar', f_attempts: 'Intentos', f_record: 'ID del registro',
@@ -250,7 +264,8 @@
     var last = lastAttempt();
     return !!(last && !last.passed && !last.review_done_at && attemptsLeft() > 0);
   }
-  function prereqsReady() { return wiDone() && allChaptersDone(); }
+  function hasCode() { return !!(state.badge && Core.normalizeBadge(state.badge)); }
+  function prereqsReady() { return hasCode() && wiDone() && allChaptersDone(); }
   function canAttempt() { return !passedAttempt() && attemptsLeft() > 0 && prereqsReady() && !postFailReview(); }
   function status() {
     if (state.ack) { return 'COMPLETED'; }
@@ -264,6 +279,7 @@
     if (s === 'COMPLETED') { return t('nx_done'); }
     if (s === 'SUPERVISOR_REVIEW_REQUIRED') { return t('nx_sup'); }
     if (passedAttempt()) { return t('nx_ack'); }
+    if (!hasCode()) { return t('nx_code'); }
     var od = releasedDocs().filter(function (d) { return !docDone(d); })[0];
     if (od) {
       if (od.role === 'WORK_INSTRUCTION') { return t('nx_wi'); }
@@ -335,7 +351,7 @@
   function defaultStep() {
     if (state.ack || passedAttempt()) { return 6; }
     if (state.attempts.length) { return 5; }
-    if (!wiDone()) { return 1; }
+    if (!hasCode() || !wiDone()) { return 1; }
     if (allChaptersDone()) { return 4; }
     return state.chapters.length || state.started_seen ? 2 : 1;
   }
@@ -343,7 +359,7 @@
 
   function stepDone(n) {
     switch (n) {
-      case 1: return wiDone();
+      case 1: return hasCode() && wiDone();
       case 2: return allChaptersDone();
       case 3: return allChaptersDone();
       case 4: return prereqsReady();
@@ -391,7 +407,7 @@
   }
 
   function checklist() {
-    var items = releasedDocs().map(docLine);
+    var items = [{ done: hasCode(), text: hasCode() ? t('codeDone') : t('codeNotDone') }].concat(releasedDocs().map(docLine));
     var done = course.chapters.filter(function (c) { return chapterDone(c.ordinal); }).map(function (c) { return c.ordinal; });
     if (done.length) {
       var r = done.length === 1 ? String(done[0]) : (done[done.length - 1] - done[0] === done.length - 1 ? done[0] + '–' + done[done.length - 1] : done.join(', '));
@@ -420,8 +436,35 @@
   }
 
   // ---- step 1: the course card, the Work Instruction and the form -------------------------------
+  function codeCard() {
+    var html = '<div class="card" id="access-code"><h2>' + esc(t('codeTitle')) + '</h2>';
+    if (hasCode()) {
+      html += '<p class="ok-line"><span class="mark" aria-hidden="true">&#10003;</span>' + esc(t('codeOk', { c: state.badge })) + '</p>' +
+        (state.attempts.length ? '' : '<div class="actions"><button type="button" class="btn small" data-codechange>' + esc(t('codeChange')) + '</button></div>');
+      return html + '</div>';
+    }
+    return html + '<p>' + esc(t('codeIntro')) + '</p><form data-codeform novalidate><div class="field">' +
+      '<label for="acccode">' + esc(t('codeLabel')) + '</label>' +
+      '<input type="text" id="acccode" name="code" class="code-input" inputmode="numeric" pattern="[0-9]*" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="6" placeholder="0000" aria-describedby="codemsg"></div>' +
+      '<p class="notice err" id="codemsg" data-codemsg role="alert" hidden></p>' +
+      '<div class="actions"><button type="submit" class="btn primary">' + esc(t('codeUse')) + '</button></div></form></div>';
+  }
+  function wireCode() {
+    var f = app.querySelector('[data-codeform]');
+    if (f) {
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var code = Core.normalizeBadge(f.elements.code.value), msg = f.querySelector('[data-codemsg]');
+        if (!code) { msg.textContent = t('codeWrong'); msg.hidden = false; f.elements.code.focus(); return; }
+        state.badge = code; save(); render();
+      });
+    }
+    var ch = app.querySelector('[data-codechange]');
+    if (ch) { ch.addEventListener('click', function () { if (!state.attempts.length) { state.badge = null; save(); render(); } }); }
+  }
+
   function stepWI(s) {
-    var html = '<div class="card"><h2>' + esc(t('about')) + '</h2><p>' + esc(L(course.summary)) + '</p>' +
+    var html = codeCard() + '<div class="card"><h2>' + esc(t('about')) + '</h2><p>' + esc(L(course.summary)) + '</p>' +
       '<ul class="facts"><li><b>' + esc(t('procedure')) + ':</b> ' + esc(L(course.procedure)) + '</li><li>' + esc(L(course.reference_note)) + '</li></ul></div>';
     html += '<div class="card"><h2>' + esc(L(s.title)) + '</h2>';
     var rel = releasedDocs();
@@ -486,6 +529,10 @@
 
   // ---- step 2: the video -----------------------------------------------------------------------
   function stepVideo(s) {
+    if (!hasCode()) {
+      return '<div class="card"><h2>' + esc(L(s.title)) + '</h2><div class="notice info">' + esc(t('codeNeeded')) + '</div>' +
+        '<div class="actions"><a class="btn primary" href="#/step/1">' + esc(t('goCode')) + '</a></div></div>';
+    }
     var v = videoInfo(), front = frontierOf(lang);
     var ticks = course.chapters.filter(function (c) { return c.ordinal > 1; }).map(function (c) {
       return '<span class="seek-tick" style="left:' + (100 * chStart(c.ordinal, v) / v.duration).toFixed(2) + '%"></span>';
@@ -703,6 +750,7 @@
       (ready ? '<p class="ok-line"><span class="mark" aria-hidden="true">&#10003;</span> ' + esc(t('everythingDone')) + '</p>' : '<p>' + esc(L(s.body)) + '</p>') +
       checklist() + '<div class="actions">' +
       (ready ? '<a class="btn primary" href="#/step/5">' + esc(t('goTest')) + '</a>'
+        : !hasCode() ? '<a class="btn primary" href="#/step/1">' + esc(t('goCode')) + '</a>'
         : (!wiDone() ? '<a class="btn primary" href="#/step/1">' + esc(t('goWI')) + '</a>' : '<a class="btn primary" href="#/step/2">' + esc(t('goVideo')) + '</a>')) +
       '</div></div>';
   }
@@ -919,6 +967,7 @@
         [t('f_mgr'), a.must_get_right_ok ? t('bothRight') : t('notPassed')],
         [t('f_attempts'), String(state.attempts.length)]);
     }
+    if (rec.badge_number) { rows.push([t('f_code'), t('codeEnding', { c: rec.badge_number })]); }
     rows.push([t('f_record'), rec.record_id]);
     return '<div class="card" data-recordcard><h2>' + esc(complete ? t('completionRecord') : t('attemptRecord')) + '</h2>' +
       (rec.preview ? '<div class="notice info"><b>' + esc(t('previewNote')) + '</b></div>' : '') +
@@ -1000,8 +1049,8 @@
     app.innerHTML = header(r.step) + body + footerNav(r.step);
     var steps = app.querySelector('[data-steps]');
     if (steps && window.matchMedia) { steps.open = window.matchMedia('(min-width: 900px)').matches; }
-    if (kind === 'wi') { wireWI(); }
-    if (kind === 'video') { wireVideo(); }
+    if (kind === 'wi') { wireWI(); wireCode(); }
+    if (kind === 'video' && hasCode()) { wireVideo(); }
     if (kind === 'final') { wireFinal(); }
     wireCommon();
   }

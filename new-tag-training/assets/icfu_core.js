@@ -21,7 +21,7 @@
 })(this, function () {
   'use strict';
 
-  var SCHEMA_VERSION = 'icfu-external-completion/1';
+  var SCHEMA_VERSION = 'icfu-external-completion/2';
   var CHECKSUM_SALT = 'ICFU-EXT-COMPLETION-1';
   var KEY_SALT = 'ICFU-KEY-1';
   var SOURCE = 'external web (GitHub Pages)';
@@ -179,6 +179,17 @@
     return Object.keys(by).sort().map(function (k) { return by[k]; });
   }
 
+  // ---- time clock badge number: format only -------------------------------------------------------
+  // The page cannot tell whose badge it is: it holds no roster and no badge list. It records the
+  // number the operator types. ICF University's importer checks the badge against the time clock
+  // list and against the typed full name, and is the authority.
+  function normalizeBadge(raw) {
+    var text = String(raw || '').replace(/[\s\-_.]+/g, '');
+    if (!/^[0-9]{3,4}$/.test(text)) { return null; }
+    while (text.length < 4) { text = '0' + text; }
+    return text;
+  }
+
   // ---- answer order on screen ------------------------------------------------------------------
   // The options are stored with the right one first. Each attempt gets its own seed and every
   // question is shown in an order derived from (seed, question), so the right answer moves around and
@@ -268,6 +279,7 @@
                 passing_score_pct: course.passing_score_pct, max_attempts: course.max_attempts },
       lang: state.ack ? state.ack.lang : state.lang,
       learner: { typed_name: state.ack ? state.ack.typed_name : null },
+      badge_number: state.badge || null,
       started_at: state.started_at,
       completed_at: state.ack ? state.ack.accepted_at : null,
       documents: (state.documents || []).map(function (d) {
@@ -307,6 +319,7 @@
     contentHash: contentHash, grade: grade, needed: needed, pctText: pctText, pointers: pointers,
     completionCode: completionCode, checksumOf: checksumOf, finalize: finalize, verify: verify,
     buildRecord: buildRecord, isoLocal: isoLocal, randomId: randomId,
-    optionOrder: optionOrder, newSeed: newSeed
+    optionOrder: optionOrder, newSeed: newSeed,
+    normalizeBadge: normalizeBadge
   };
 });
