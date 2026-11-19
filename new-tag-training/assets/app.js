@@ -98,6 +98,8 @@
       f_course: 'Course', f_version: 'Version', f_lang: 'Language', f_name: 'Name', f_date: 'Date',
       f_score: 'Score', f_result: 'Result', f_mgr: 'Must-get-right questions', f_attempts: 'Attempts', f_record: 'Record ID',
       bothRight: 'Both right', langName: 'English',
+      emailHow: 'Send your record to ICF. Tap the button. Your email app opens with the message already written. Do not change it. Tap Send.',
+      emailBtn: 'Email my record to ICF', emailBackup: 'If your email app did not open, tap Copy record, paste it into a new email and send it to {a}.',
       notSent: 'This record is not sent anywhere. It is kept only in this browser. Give the completion code and the downloaded file to your supervisor, who enters it in ICF University.',
       print: 'Print', download: 'Download record (.json)', copy: 'Copy record', copied: 'Copied.',
       copyFailed: 'Could not copy. Use Download instead.',
@@ -183,6 +185,8 @@
       f_course: 'Curso', f_version: 'Versión', f_lang: 'Idioma', f_name: 'Nombre', f_date: 'Fecha',
       f_score: 'Calificación', f_result: 'Resultado', f_mgr: 'Preguntas que debe acertar', f_attempts: 'Intentos', f_record: 'ID del registro',
       bothRight: 'Las dos correctas', langName: 'Español',
+      emailHow: 'Envíe su registro a ICF. Toque el botón. Se abre su aplicación de correo con el mensaje ya escrito. No lo cambie. Toque Enviar.',
+      emailBtn: 'Enviar mi registro a ICF por correo', emailBackup: 'Si no se abrió su aplicación de correo, toque Copiar registro, péguelo en un correo nuevo y envíelo a {a}.',
       notSent: 'Este registro no se envía a ninguna parte. Solo se guarda en este navegador. Entregue el código de finalización y el archivo descargado a su supervisor, que lo registra en ICF University.',
       print: 'Imprimir', download: 'Descargar registro (.json)', copy: 'Copiar registro', copied: 'Copiado.',
       copyFailed: 'No se pudo copiar. Use Descargar.',
@@ -230,7 +234,7 @@
   function freshState() {
     return { v: 1, record_id: Core.randomId(), preview: PREVIEW, started_at: nowIso(), lang: lang,
              frontier: { en: 0, es: 0 }, chapters: [], documents: [], attempts: [],
-             draft: null, ack: null, record: null };
+             draft: null, ack: null, record: null, sent: null };
   }
 
   // ---- derived course status: same order of rules as ICF University's learning.decorate --------
@@ -973,9 +977,12 @@
       (rec.preview ? '<div class="notice info"><b>' + esc(t('previewNote')) + '</b></div>' : '') +
       '<p>' + esc(t('completionCode')) + ':</p><p><span class="code" data-code>' + esc(rec.completion_code) + '</span></p>' +
       '<table class="record"><tbody>' + rows.map(function (r) { return '<tr><th scope="row">' + esc(r[0]) + '</th><td>' + esc(r[1]) + '</td></tr>'; }).join('') + '</tbody></table>' +
-      '<div class="notice warn" role="note">' + esc(complete ? t('notSent') : t('attemptRecordNote')) + '</div>' +
+      (emailTo() && !rec.preview ? '<div class="notice info" role="note">' + esc(t('emailHow')) + '</div>' +
+        '<div class="actions no-print"><button type="button" class="btn primary" data-emailrec>' + esc(t('emailBtn')) + '</button></div>' +
+        '<p class="muted small-note">' + esc(t('emailBackup', { a: emailTo() })) + '</p>'
+        : '<div class="notice warn" role="note">' + esc(complete ? t('notSent') : t('attemptRecordNote')) + '</div>') +
       '<div class="actions no-print"><button type="button" class="btn" data-print>' + esc(t('print')) + '</button>' +
-      '<button type="button" class="btn primary" data-download>' + esc(complete ? t('download') : t('downloadAttempt')) + '</button>' +
+      '<button type="button" class="btn' + (emailTo() && !rec.preview ? '' : ' primary') + '" data-download>' + esc(complete ? t('download') : t('downloadAttempt')) + '</button>' +
       '<button type="button" class="btn" data-copy>' + esc(t('copy')) + '</button></div>' +
       '<p class="muted" data-copymsg role="status" aria-live="polite"></p></div>';
   }
@@ -987,9 +994,41 @@
   }
   var currentRecord = null;
 
+  // ---- email the finished record to ICF -------------------------------------------------------------
+  // The page cannot send anything itself. The button opens the learner's own mail app with a message to
+  // course.submit.mailto already written; the learner taps Send, so it goes from their address. The record
+  // travels as one text block (deflate + base64url when the browser can compress, plain base64url
+  // otherwise). The importer decodes it, re-grades it and checks the checksum.
+  function emailTo() { var a = course.submit && course.submit.mailto; return (typeof a === 'string' && /^[^@\s]+@icfmercantile\.com$/.test(a)) ? a : ''; }
+  function b64url(bytes) {
+    var bin = ''; for (var i = 0; i < bytes.length; i++) { bin += String.fromCharCode(bytes[i]); }
+    return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  }
+  function packRecord(rec) {
+    var bytes = new TextEncoder().encode(JSON.stringify(rec));
+    if (typeof CompressionStream === 'function') {
+      var cs = new CompressionStream('deflate-raw');
+      var w = cs.writable.getWriter(); w.write(bytes); w.close();
+      return new Response(cs.readable).arrayBuffer().then(function (buf) { return 'ICFU1z:' + b64url(new Uint8Array(buf)); }, function () { return 'ICFU1:' + b64url(bytes); });
+    }
+    return Promise.resolve('ICFU1:' + b64url(bytes));
+  }
+  function mailtoFor(rec, packed) {
+    var done = !!rec.completed_at, who = rec.learner && rec.learner.typed_name ? rec.learner.typed_name : '', badge = rec.badge_number || '';
+    var subject = 'New tag training' + (done ? '' : ' attempts') + ': ' + who + ', badge ' + badge + ', ' + rec.completion_code;
+    var lines = ['Training record for ICF. Send this email as it is.', '',
+      'Name: ' + who, 'Badge: ' + badge, 'Course: ' + course.course_id + ' ' + course.version_label, 'Completion code: ' + rec.completion_code, '',
+      '----- ICF RECORD (do not edit) -----'];
+    for (var i = 0; i < packed.length; i += 64) { lines.push(packed.slice(i, i + 64)); }
+    lines.push('----- END -----');
+    return 'mailto:' + emailTo() + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\r\n'));
+  }
+
   function wireRecord() {
     var rec = state.record || currentRecord;
     if (!rec) { return; }
+    var em = app.querySelector('[data-emailrec]');
+    if (em) { em.addEventListener('click', function () { packRecord(rec).then(function (p) { window.location.href = mailtoFor(rec, p); }); }); }
     var json = JSON.stringify(rec, null, 2);
     var p = app.querySelector('[data-print]'); if (p) { p.addEventListener('click', function () { window.print(); }); }
     var d = app.querySelector('[data-download]');

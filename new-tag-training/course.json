@@ -23,6 +23,7 @@
   },
   "passing_score_pct": 80,
   "max_attempts": 2,
+  "submit": { "mailto": "mbaynes@icfmercantile.com" },
   "documents": [],
   "coverage": {
     "lead": {
